@@ -1,11 +1,35 @@
 <script setup>
-import { onMounted, provide, reactive, ref, watch } from 'vue';
+import { computed, onMounted, provide, reactive, ref, watch } from 'vue';
 import axios from 'axios';
 import Header from './components/Header.vue';
 import CartList from './components/CartList.vue';
 import Drawer from './components/Drawer.vue';
 
 const items = ref([])
+const cart = ref([])
+
+const drawerOpen = ref(false)
+
+const totalPrice = computed(
+  ()=>cart.value.reduce((acc,item)=> acc+item.price,0)
+)
+
+const closeDrawer = () => {
+  drawerOpen.value = false
+}
+const openDrawer = () => {
+  drawerOpen.value = true
+}
+
+const onClickAddPlus = (item) => {
+  if(!item.isAdded){
+    addToCart(item)
+
+  }else{
+    removeFromCart(item)
+  }
+  console.log(cart)
+}
 
 const filter = reactive({
   sortBy: 'title',
@@ -34,8 +58,14 @@ const addToFavorite = async (item) => {
   }
 }
 
-
-
+const addToCart = (item) => {
+  cart.value.push(item)
+  item.isAdded = true
+}
+const removeFromCart = (item) =>{
+  cart.value.splice(cart.value.indexOf(item),1)
+  item.isAdded = false
+}
 const fetchFavorite = async () => {
   try{
     const {data: favorites} = await axios.get('https://f7715800e56706b7.mokky.dev/favorites')
@@ -97,13 +127,19 @@ onMounted( async ()=>{
 })
 watch(filter, fetchItems)
 
-provide('addToFavorite', addToFavorite)
+provide('cart', {
+  cart,
+  closeDrawer,
+  openDrawer,
+  addToCart,
+  removeFromCart
+})
 </script>
 
 <template>
-  <!-- <Drawer/> -->
+  <Drawer v-if="drawerOpen"/>
   <div class="bg-white w-4/5 m-auto rounded-xl shadow-xl mt-10 mb-10">
-    <Header />
+    <Header :total-price="totalPrice" @open-drawer="openDrawer" />
 
     <div class="p-10">
       <div class="flex justify-between items-center">
@@ -129,7 +165,7 @@ provide('addToFavorite', addToFavorite)
       </div>
 
       <div class="mt-10">
-        <CartList :items="items" @addToFavorite="addToFavorite"/>
+        <CartList :items="items" @add-to-favorite="addToFavorite" @add-to-cart="onClickAddPlus"/>
       </div>
 
     </div>
