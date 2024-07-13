@@ -14,6 +14,8 @@ const totalPrice = computed(
   ()=>cart.value.reduce((acc,item)=> acc+item.price,0)
 )
 
+const varPrice = computed(()=> Math.round((totalPrice.value * 5)/100))
+
 const closeDrawer = () => {
   drawerOpen.value = false
 }
@@ -137,7 +139,7 @@ provide('cart', {
 </script>
 
 <template>
-  <Drawer v-if="drawerOpen"/>
+  <Drawer v-if="drawerOpen" :totalPrice="totalPrice" :varPrice="varPrice"/>
   <div class="bg-white w-4/5 m-auto rounded-xl shadow-xl mt-10 mb-10">
     <Header :total-price="totalPrice" @open-drawer="openDrawer" />
 

@@ -1,6 +1,11 @@
 <script setup>
 import DrawerHead from './DrawerHead.vue';
 import CartItemList from './CartItemList.vue';
+
+defineProps({
+    totalPrice:Number,
+    varPrice:Number,
+})
 </script>
 
 <template>
@@ -17,7 +22,7 @@ import CartItemList from './CartItemList.vue';
                 </span>
                 <div class="flex-1 border-b border-dashed mb-1"></div>
                 <b>
-                    12990
+                    {{ totalPrice }} руб.
                 </b>
             </div>
 
@@ -27,7 +32,7 @@ import CartItemList from './CartItemList.vue';
                 </span>
                 <div class="flex-1 border-b border-dashed mb-1"></div>
                 <b>
-                    900
+                    {{ varPrice }}
                 </b>
             </div>
 
